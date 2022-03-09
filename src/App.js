@@ -1,10 +1,12 @@
-import './App.css';
+import { Rotas } from './routes';
+import Global from './pages/styles/global';
 
 function App() {
   return (
-    <div className="App">
-      <h1>Hello React</h1>
-    </div>
+    <>
+      <Global />
+      <Rotas />
+    </>
   );
 }
 
