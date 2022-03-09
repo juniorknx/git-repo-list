@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
-import { FaGithub, FaPlus, FaSpinner } from 'react-icons/fa';
-import { Container, Form, Title, SubmitButton, Input } from "./styles";
+import { FaGithub, FaPlus, FaSpinner, FaBars, FaTrash } from 'react-icons/fa';
+import { Container, Form, Title, SubmitButton, Input, List, DeleteButton } from "./styles";
 import { api } from '../../services/api';
+import { toast } from 'react-toastify';
 
 export function Home() {
 
@@ -17,14 +18,14 @@ export function Home() {
                 const response = await api.get(`/repos/${newRepo}`);
 
                 const data = {
-                    data: response.data.full_name,
+                    name: response.data.full_name,
                 }
-                console.log(data)
+
                 setRepositorios([...repositorios, data]);
                 setNewRepo('');
             } catch (err) {
-                console.log('Erro na req')
-            }finally{
+                toast.error('Repositório não encontrado.');
+            } finally {
                 setLoading(false);
             }
 
@@ -36,6 +37,11 @@ export function Home() {
     function handleInputChange(e) {
         setNewRepo(e.target.value);
     }
+
+    const handleDelete = useCallback((repo) => {
+        const find = repositorios.filter(r => r.name !== repo);
+        setRepositorios(find);
+    }, [repositorios]);
 
     return (
         <Container>
@@ -53,10 +59,25 @@ export function Home() {
                 />
 
                 <SubmitButton type='submit' loading={loading ? 1 : 0}>
-                    {loading ? <FaSpinner color='#fff' size={15} /> : <FaPlus color='#fff' size={15} />}   
+                    {loading ? <FaSpinner color='#fff' size={15} /> : <FaPlus color='#fff' size={15} />}
                 </SubmitButton>
             </Form>
 
+            <List>
+                {repositorios.map(repo => (
+                    <li key={repo.name}>
+                        <span>
+                            <DeleteButton onClick={() => handleDelete(repo.name)}>
+                                <FaTrash size={14} />
+                            </DeleteButton>
+                            {repo.name}
+                        </span>
+                        <a href="">
+                            <FaBars size={18} />
+                        </a>
+                    </li>
+                ))}
+            </List>
         </Container>
     )
 }
